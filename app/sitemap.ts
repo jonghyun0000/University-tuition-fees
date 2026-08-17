@@ -8,6 +8,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${SITE_URL}/`, lastModified: now, priority: 1 },
     { url: `${SITE_URL}/about/`, lastModified: now, priority: 0.5 },
     { url: `${SITE_URL}/method/`, lastModified: now, priority: 0.5 },
+    { url: `${SITE_URL}/compare/`, lastModified: now, priority: 0.7 },
     ...universities.map(u => ({
       url: `${SITE_URL}/univ/${u.id}/`, lastModified: now, priority: 0.8,
     })),

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Analytics } from '@vercel/analytics/next';
 import './globals.css';
 import { SITE_URL, BASE_YEAR } from '@/lib/data';
 
@@ -11,6 +12,14 @@ export const metadata: Metadata = {
   description:
     `전국 대학의 등록금과 학생 1인당 교육비를 대학정보공시 ${BASE_YEAR}년 자료 그대로 보여준다. 순위를 매기지 않는다.`,
   robots: { index: true, follow: true },
+  // 검색엔진 소유확인. 값은 Vercel 환경변수로 넣는다 — 코드를 고칠 필요가 없다.
+  // 네이버는 public/naverXXXX.html 파일 업로드 방식도 쓸 수 있다.
+  verification: {
+    google: process.env.GOOGLE_SITE_VERIFICATION,
+    other: process.env.NAVER_SITE_VERIFICATION
+      ? { 'naver-site-verification': process.env.NAVER_SITE_VERIFICATION }
+      : {},
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -22,6 +31,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <div className="mx-auto max-w-[880px] px-5 py-3 flex items-center justify-between">
               <a href="/" className="text-[15px] font-bold tracking-tight">등록금 영수증</a>
               <nav className="flex gap-4 text-[13px] text-ink2">
+                <a href="/compare/" className="hover:text-accent">비교하기</a>
                 <a href="/method/" className="hover:text-accent">지표 정의</a>
                 <a href="/about/" className="hover:text-accent">데이터 출처</a>
               </nav>
@@ -35,6 +45,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </div>
           </footer>
         </div>
+        <Analytics />
       </body>
     </html>
   );

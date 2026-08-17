@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation';
 import { universities, getUniversity, relatedOf, comparePath, SITE_URL } from '@/lib/data';
 import { MetricCard, DerivedCard } from '@/components/MetricCard';
 import AmountBars from '@/components/AmountBars';
+import DistributionStrip from '@/components/DistributionStrip';
+import { returnRateDistribution } from '@/lib/stats';
 import { fmtManwon, fmtPer1M } from '@/lib/format';
 
 type Params = { params: Promise<{ id: string }> };
@@ -43,6 +45,7 @@ export default async function UnivPage({ params }: Params) {
   const { tuition, eduExpense, scholarship, loanRatio } = u.metrics;
   const rr = u.returnRate.value;
   const related = relatedOf(u);
+  const dist = returnRateDistribution(u);
 
   const bars = [
     tuition.value != null && { label: tuition.label, amount: tuition.value, baseYear: tuition.baseYear },
@@ -87,6 +90,12 @@ export default async function UnivPage({ params }: Params) {
               등록금 100만원당 <strong>{fmtPer1M(rr!)}</strong>이 교육비로 쓰인 셈이다.
               100만원은 실제 등록금이 아니라 학교끼리 비교하기 위한 기준 단위다.
             </p>
+            {dist && (
+              <p className="mt-2 text-[14.5px] text-ink2">
+                이 값은 {dist.scope} {dist.total}개교 가운데{' '}
+                <strong>큰 쪽에서 상위 {dist.topPercent}%</strong>에 해당한다.
+              </p>
+            )}
           </>
         ) : (
           <>
@@ -121,6 +130,14 @@ export default async function UnivPage({ params }: Params) {
         </div>
       </section>
 
+      {dist && rr != null && (
+        <section className="pb-11">
+          <p className="mb-3.5 text-[12px] font-bold tracking-widest text-muted">전체 분포에서의 위치</p>
+          <h2 className="text-[19px] font-bold tracking-tight">{dist.scope} {dist.total}개교 가운데</h2>
+          <DistributionStrip dist={dist} value={rr} label="교육비 환원율" />
+        </section>
+      )}
+
       {bars.length > 0 && (
         <section className="pb-11">
           <p className="mb-3.5 text-[12px] font-bold tracking-widest text-muted">한눈에 보기</p>
@@ -148,6 +165,10 @@ export default async function UnivPage({ params }: Params) {
             <p className="mt-3 text-[13px]">
               <a className="text-accent underline underline-offset-2" href={`${comparePath(u.id, related[0].id)}/`}>
                 {u.name} · {related[0].name} 나란히 비교하기
+              </a>
+              <span className="mx-2 text-muted">·</span>
+              <a className="text-accent underline underline-offset-2" href="/compare/">
+                직접 골라 비교하기
               </a>
             </p>
           )}
