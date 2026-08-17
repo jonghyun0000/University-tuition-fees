@@ -1,0 +1,123 @@
+{
+  "id": "0000567",
+  "name": "송곡대학교",
+  "fullName": "송곡대학교 _ 본교",
+  "campus": "본교",
+  "campusCd": "1",
+  "estb": "사립",
+  "estbGroup": "사립",
+  "div": "전문대학",
+  "kind": "전문대학",
+  "region": "강원",
+  "regionCd": "42",
+  "baseYear": "2025",
+  "metrics": {
+    "tuition": {
+      "value": 5499395.4,
+      "unit": "KRW",
+      "label": "평균등록금",
+      "indctId": "38",
+      "baseYear": "2025",
+      "status": "ok"
+    },
+    "eduExpense": {
+      "value": 12998706.5,
+      "unit": "KRW",
+      "label": "학생 1인당 교육비",
+      "indctId": "40",
+      "baseYear": "2025",
+      "status": "ok"
+    },
+    "scholarship": {
+      "value": 3122533.7,
+      "unit": "KRW",
+      "label": "재학생 1인당 장학금",
+      "indctId": "45",
+      "baseYear": "2025",
+      "status": "ok"
+    },
+    "loanRatio": {
+      "value": 13.2,
+      "unit": "PERCENT",
+      "label": "학자금대출 이용학생비율(전체)",
+      "indctId": "46",
+      "baseYear": "2025",
+      "status": "ok"
+    }
+  },
+  "returnRate": {
+    "value": 236.4,
+    "derived": true,
+    "unit": "PERCENT",
+    "formula": "학생 1인당 교육비 ÷ 평균등록금 × 100",
+    "basedOn": [
+      "tuition",
+      "eduExpense"
+    ],
+    "baseYear": "2025",
+    "status": "ok"
+  },
+  "completeness": "full",
+  "missing": [],
+  "publishable": true,
+  "mergeInto": null,
+  "related": [
+    {
+      "id": "0000072",
+      "name": "가톨릭관동대학교",
+      "region": "강원",
+      "estb": "사립"
+    },
+    {
+      "id": "0000119",
+      "name": "상지대학교",
+      "region": "강원",
+      "estb": "사립"
+    },
+    {
+      "id": "0000515",
+      "name": "세경대학교",
+      "region": "강원",
+      "estb": "사립"
+    },
+    {
+      "id": "0000564",
+      "name": "송호대학교",
+      "region": "강원",
+      "estb": "사립"
+    },
+    {
+      "id": "0000514",
+      "name": "강릉영동대학교",
+      "region": "강원",
+      "estb": "사립"
+    }
+  ],
+  "sources": [
+    {
+      "item": "평균등록금",
+      "baseYear": "2025",
+      "provider": "대학알리미 재정 현황 (한국대학교육협의회)",
+      "url": "https://www.academyinfo.go.kr"
+    },
+    {
+      "item": "학생 1인당 교육비",
+      "baseYear": "2025",
+      "provider": "대학알리미 재정 현황 (한국대학교육협의회)",
+      "url": "https://www.academyinfo.go.kr"
+    },
+    {
+      "item": "재학생 1인당 장학금",
+      "baseYear": "2025",
+      "provider": "대학알리미 재정 현황 (한국대학교육협의회)",
+      "url": "https://www.academyinfo.go.kr"
+    },
+    {
+      "item": "학자금대출 이용학생비율(전체)",
+      "baseYear": "2025",
+      "provider": "대학알리미 재정 현황 (한국대학교육협의회)",
+      "url": "https://www.academyinfo.go.kr"
+    }
+  ],
+  "license": "이용허락범위 제한 없음 · 출처표시"
+}
