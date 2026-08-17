@@ -30,8 +30,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <header className="border-b border-line bg-surface">
             <div className="mx-auto max-w-[880px] px-5 py-3 flex items-center justify-between">
               <a href="/" className="text-[15px] font-bold tracking-tight">등록금 영수증</a>
-              <nav className="flex gap-4 text-[13px] text-ink2">
-                <a href="/compare/" className="hover:text-accent">비교하기</a>
+              <nav className="flex items-center gap-4 text-[13px] text-ink2">
+                <a href="/compare/"
+                   className="inline-flex items-center gap-1.5 rounded border border-accent bg-white
+                              px-2.5 py-1 font-bold text-accent hover:bg-[#eef4fc]">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                       strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M3 20h18" /><path d="M7.5 20V9" /><path d="M16.5 20v-6" />
+                  </svg>
+                  비교하기
+                </a>
                 <a href="/method/" className="hover:text-accent">지표 정의</a>
                 <a href="/about/" className="hover:text-accent">데이터 출처</a>
               </nav>

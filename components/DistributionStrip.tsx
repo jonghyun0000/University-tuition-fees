@@ -1,63 +1,75 @@
 import type { Distribution } from '@/lib/stats';
+import { fmtManwon, fmtPercent } from '@/lib/format';
 
 /**
  * 분포에서의 위치. 순위표가 아니라 히스토그램 위의 한 점이다.
- * 단일 시리즈라 범례가 필요 없고, 이 학교의 위치만 색으로 구분한다.
+ * 단일 시리즈라 범례가 필요 없고, 이 학교가 속한 구간만 색으로 구분한다.
+ *
+ * 축 라벨과 '이 학교' 표시는 SVG 밖 HTML로 뺐다. SVG 안에 두면 viewBox가
+ * 모바일 폭으로 줄어들 때 글자까지 같이 줄어 읽을 수 없다.
  */
-export default function DistributionStrip({
-  dist, value, unit = '%', label,
-}: { dist: Distribution; value: number; unit?: string; label: string }) {
-  const W = 780, H = 112, PAD_B = 26, PAD_T = 18, BAR_GAP = 2;
-  const maxCount = Math.max(...dist.bins.map(b => b.count));
-  const bw = (W - BAR_GAP * (dist.bins.length - 1)) / dist.bins.length;
-  const plotH = H - PAD_B;
-  const plotTop = PAD_T;
 
-  const fmt = (v: number) => `${Math.round(v)}${unit}`;
+const VB_W = 780, VB_H = 64, GAP = 2;
+
+export default function DistributionStrip({ dist }: { dist: Distribution }) {
+  const fmt = (v: number) => (dist.unit === 'KRW' ? fmtManwon(v) : fmtPercent(v));
+  const fmtAxis = (v: number) => (dist.unit === 'KRW' ? fmtManwon(v) : `${Math.round(v)}%`);
+
+  const n = dist.bins.length;
+  const maxCount = Math.max(...dist.bins.map(b => b.count));
+  const bw = (VB_W - GAP * (n - 1)) / n;
+
+  // 막대 중앙의 가로 위치를 퍼센트로. HTML 라벨을 같은 자리에 얹는다.
+  const centerPct = ((dist.binIndex * (bw + GAP) + bw / 2) / VB_W) * 100;
+  const atStart = centerPct < 9, atEnd = centerPct > 91;
 
   return (
-    <div className="mt-3.5 rounded-md border border-line bg-surface p-5">
-      <p className="text-[15px] leading-relaxed">
-        {label} <strong className="text-accent">{value.toFixed(1)}{unit}</strong>는{' '}
-        {dist.scope} {dist.total}개교 가운데 <strong>값이 큰 쪽에서 상위 {dist.topPercent}%</strong>다.
-        중앙값은 {fmt(dist.median)}이다.
+    <div className="border-t border-line py-5 first:border-t-0 first:pt-0">
+      <p className="text-[14.5px] leading-relaxed">
+        <span className="font-bold">{dist.label}</span>{' '}
+        <strong className="text-accent">{fmt(dist.value)}</strong>
+        {' — '}
+        공시한 {dist.total}개교 가운데 {dist.direction} 쪽에서{' '}
+        <strong>{dist.rank}번째, 상위 {dist.topPercent}%</strong>
+        <span className="text-muted"> · 중앙값 {fmt(dist.median)}</span>
       </p>
 
-      <svg viewBox={`0 0 ${W} ${H}`} width="100%" height={H} role="img" className="mt-4"
-           aria-label={`${label} 분포. ${dist.total}개교 중 상위 ${dist.topPercent}퍼센트. 중앙값 ${fmt(dist.median)}.`}>
-        {dist.bins.map((b, i) => {
-          const h = maxCount ? (b.count / maxCount) * (plotH - plotTop) : 0;
-          const x = i * (bw + BAR_GAP);
-          const isHere = i === dist.binIndex;
-          return (
-            <rect key={i} x={x} y={plotH - h} width={bw} height={Math.max(h, 1)}
-                  rx="2" fill={isHere ? '#2a78d6' : '#e1e0d9'} />
-          );
-        })}
-        <line x1="0" y1={plotH} x2={W} y2={plotH} stroke="#c3c2b7" strokeWidth="1" />
-        <text x="0" y={H - 8} fontSize="12" fill="#6b6963">{fmt(dist.min)}</text>
-        <text x={W} y={H - 8} fontSize="12" fill="#6b6963" textAnchor="end">
-          {fmt(dist.max)}{dist.max > dist.bins[dist.bins.length - 1].to ? ' 이상' : ''}
-        </text>
-        {(() => {
-          const h = maxCount ? (dist.bins[dist.binIndex].count / maxCount) * (plotH - plotTop) : 0;
-          const cx = dist.binIndex * (bw + BAR_GAP) + bw / 2;
-          const y = Math.max(12, plotH - h - 6);
-          const anchor = cx < 60 ? 'start' : cx > W - 60 ? 'end' : 'middle';
-          const tx = anchor === 'start' ? 0 : anchor === 'end' ? W : cx;
-          return (
-            <text x={tx} y={y} fontSize="12" fontWeight="700" fill="#2a78d6" textAnchor={anchor}>
-              이 학교
-            </text>
-          );
-        })()}
-      </svg>
+      <div className="mt-3">
+        <div className="relative h-[17px]">
+          <span
+            className="absolute top-0 whitespace-nowrap text-[11.5px] font-bold leading-none text-accent"
+            style={
+              atStart ? { left: 0 }
+              : atEnd ? { right: 0 }
+              : { left: `${centerPct}%`, transform: 'translateX(-50%)' }
+            }
+          >
+            이 학교
+          </span>
+        </div>
 
-      <p className="mt-3 border-t border-line pt-3 text-[12.5px] text-muted">
-        가로축은 {label}, 세로 막대는 그 구간에 속한 학교 수다. 파란 막대가 이 학교가 속한 구간이다.
-        <strong> 값이 크다고 좋은 학교, 작다고 나쁜 학교가 아니다.</strong> 국공립대와 연구중심대는
-        국고·연구비가 교육비에 들어와 구조적으로 높게 나온다. 분포에서의 위치를 보여줄 뿐 순위를 매기지 않는다.
-      </p>
+        <svg viewBox={`0 0 ${VB_W} ${VB_H}`} width="100%" height={VB_H}
+             preserveAspectRatio="none" role="img"
+             aria-label={`${dist.label} 분포. 공시한 ${dist.total}개교 가운데 ${dist.direction} 쪽에서 ${dist.rank}번째, 상위 ${dist.topPercent}퍼센트. 중앙값 ${fmt(dist.median)}.`}>
+          {dist.bins.map((b, i) => {
+            const h = maxCount ? (b.count / maxCount) * (VB_H - 3) : 0;
+            return (
+              <rect key={i} x={i * (bw + GAP)} y={VB_H - Math.max(h, 2)} width={bw}
+                    height={Math.max(h, 2)} fill={i === dist.binIndex ? '#2166bd' : '#e1e0d9'} />
+            );
+          })}
+        </svg>
+
+        <div className="mt-1 flex justify-between border-t border-axis pt-1 text-[11.5px] text-muted">
+          <span>{fmtAxis(dist.min)}</span>
+          <span>
+            {fmtAxis(dist.bins[n - 1].to)}
+            {dist.capped ? ` 이상 (최대 ${fmtAxis(dist.max)})` : ''}
+          </span>
+        </div>
+      </div>
+
+      <p className="mt-2.5 text-[12.5px] text-muted">{dist.caveat}</p>
     </div>
   );
 }

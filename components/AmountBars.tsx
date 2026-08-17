@@ -30,7 +30,7 @@ export default function AmountBars({ rows }: { rows: Row[] }) {
               <text x={LABEL_W - 12} y={y + 16} textAnchor="end" fontSize="13" fill="#52514e">{r.label}</text>
               <path
                 d={`M${LABEL_W},${y} H${LABEL_W + w - R} a${R},${R} 0 0 1 ${R},${R} V${y + BAR_H - R} a${R},${R} 0 0 1 -${R},${R} H${LABEL_W} Z`}
-                fill="#2a78d6"
+                fill="#2166bd"
               />
               <text x={LABEL_W + w + 10} y={y + 16} fontSize="13" fontWeight="700" fill="#0b0b0b">
                 {fmtManwon(r.amount)}

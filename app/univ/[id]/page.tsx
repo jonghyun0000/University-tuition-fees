@@ -4,7 +4,7 @@ import { universities, getUniversity, relatedOf, comparePath, SITE_URL } from '@
 import { MetricCard, DerivedCard } from '@/components/MetricCard';
 import AmountBars from '@/components/AmountBars';
 import DistributionStrip from '@/components/DistributionStrip';
-import { returnRateDistribution } from '@/lib/stats';
+import { distributionsOf, distributionOf } from '@/lib/stats';
 import { fmtManwon, fmtPer1M } from '@/lib/format';
 
 type Params = { params: Promise<{ id: string }> };
@@ -45,7 +45,8 @@ export default async function UnivPage({ params }: Params) {
   const { tuition, eduExpense, scholarship, loanRatio } = u.metrics;
   const rr = u.returnRate.value;
   const related = relatedOf(u);
-  const dist = returnRateDistribution(u);
+  const dists = distributionsOf(u);
+  const tuitionDist = distributionOf(u, 'tuition');
 
   const bars = [
     tuition.value != null && { label: tuition.label, amount: tuition.value, baseYear: tuition.baseYear },
@@ -90,10 +91,11 @@ export default async function UnivPage({ params }: Params) {
               등록금 100만원당 <strong>{fmtPer1M(rr!)}</strong>이 교육비로 쓰인 셈이다.
               100만원은 실제 등록금이 아니라 학교끼리 비교하기 위한 기준 단위다.
             </p>
-            {dist && (
+            {tuitionDist && (
               <p className="mt-2 text-[14.5px] text-ink2">
-                이 값은 {dist.scope} {dist.total}개교 가운데{' '}
-                <strong>큰 쪽에서 상위 {dist.topPercent}%</strong>에 해당한다.
+                이 등록금은 공시한 {tuitionDist.total}개교 가운데{' '}
+                <strong>비싼 쪽에서 {tuitionDist.rank}번째, 상위 {tuitionDist.topPercent}%</strong>다.
+                중앙값은 {fmtManwon(tuitionDist.median)}이다.
               </p>
             )}
           </>
@@ -130,11 +132,19 @@ export default async function UnivPage({ params }: Params) {
         </div>
       </section>
 
-      {dist && rr != null && (
+      {dists.length > 0 && (
         <section className="pb-11">
           <p className="mb-3.5 text-[12px] font-bold tracking-widest text-muted">전체 분포에서의 위치</p>
-          <h2 className="text-[19px] font-bold tracking-tight">{dist.scope} {dist.total}개교 가운데</h2>
-          <DistributionStrip dist={dist} value={rr} label="교육비 환원율" />
+          <h2 className="mb-2 text-[19px] font-bold tracking-tight">공시한 학교 전체 가운데 어디쯤인가</h2>
+          <p className="mb-4 text-[13px] text-muted">
+            대학과 전문대학을 나누지 않고, 그 지표를 공시한 학교 전체를 한 모집단으로 놓고 계산한다.
+            학제에 따라 수업연한과 재정 구조가 달라 분포가 봉우리 여러 개로 갈라져 보일 수 있다.
+            공시하지 않은 학교는 모집단에서 빠질 뿐 0으로 채우지 않는다.
+            <strong className="text-ink2"> 순위표를 만들지 않고 분포에서의 위치만 보여준다.</strong>
+          </p>
+          <div className="rounded-md border border-line bg-surface px-6 py-5">
+            {dists.map(d => <DistributionStrip key={d.key} dist={d} />)}
+          </div>
         </section>
       )}
 

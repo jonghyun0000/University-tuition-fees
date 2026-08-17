@@ -107,7 +107,7 @@ export default function ComparePicker({ index }: { index: SearchEntry[] }) {
             나란히 보기
           </a>
         ) : (
-          <span className="inline-block cursor-not-allowed rounded-md bg-[#e1e0d9] px-5 py-2.5 text-[14px] font-bold text-muted">
+          <span className="inline-block cursor-not-allowed rounded-md bg-[#e1e0d9] px-5 py-2.5 text-[14px] font-bold text-ink2">
             학교 두 곳을 고르면 열린다
           </span>
         )}
