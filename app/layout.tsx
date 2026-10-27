@@ -4,6 +4,10 @@ import './globals.css';
 import { SITE_URL, BASE_YEAR } from '@/lib/data';
 
 export const metadata: Metadata = {
+  applicationName: '등록금 영수증',
+  manifest: '/manifest.webmanifest',
+  appleWebApp: { capable: true, title: '등록금 영수증', statusBarStyle: 'default' },
+  icons: { icon: [{ url: '/icons/app-32.png', sizes: '32x32', type: 'image/png' }], apple: [{ url: '/icons/app-180.png', sizes: '180x180', type: 'image/png' }] },
   metadataBase: new URL(SITE_URL),
   title: {
     default: `등록금 영수증 — 대학정보공시로 보는 등록금 사용 내역 (${BASE_YEAR})`,
